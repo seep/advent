@@ -1,0 +1,11 @@
+[package]
+name = "advent"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "0.12.0"
+
+[lib]
+name = "aoc"
+path = "src/lib.rs"
