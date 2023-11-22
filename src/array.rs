@@ -45,18 +45,22 @@ impl<T: Clone> Array2D<T> {
         }
     }
 
+    /// Returns the number of rows in the array.
     pub fn rows(&self) -> usize {
         self.rows
     }
 
+    /// Returns the number of columns in the array.
     pub fn cols(&self) -> usize {
         self.cols
     }
 
+    /// Get the value at the specified [row] and [col].
     pub fn get(&self, row: usize, col: usize) -> &T {
         &self.values[self.cols * row + col]
     }
 
+    /// Set the [value] at the specified [row] and [col].
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         self.values[self.cols * row + col] = value;
     }
