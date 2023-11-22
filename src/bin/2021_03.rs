@@ -1,14 +1,10 @@
 use itertools::Itertools;
 
-use aoc::read_input;
+use aoc::aoc;
+
+aoc!(part_one, part_two);
 
 const WIDTH: usize = 12;
-
-fn main() {
-    let input = parse_input(read_input!());
-    println!("{}", part_one(&input));
-    println!("{}", part_two(&input));
-}
 
 fn parse_input(input: &str) -> Vec<u32> {
     input.lines().map(parse_input_line).sorted().collect()
@@ -18,7 +14,9 @@ fn parse_input_line(line: &str) -> u32 {
     u32::from_str_radix(line, 2).unwrap()
 }
 
-fn part_one(values: &[u32]) -> u32 {
+fn part_one(input: &str) -> u32 {
+    let values = parse_input(input);
+
     let mut counts = [0u32; WIDTH];
 
     for (bit, count) in counts.iter_mut().enumerate() {
@@ -45,9 +43,11 @@ fn part_one(values: &[u32]) -> u32 {
     rate_gam * rate_eps
 }
 
-fn part_two(values: &[u32]) -> u32 {
-    let rate_oxy = part_two_search(values, true);
-    let rate_co2 = part_two_search(values, false);
+fn part_two(input: &str) -> u32 {
+    let values = parse_input(input);
+
+    let rate_oxy = part_two_search(&values, true);
+    let rate_co2 = part_two_search(&values, false);
 
     rate_oxy * rate_co2
 }

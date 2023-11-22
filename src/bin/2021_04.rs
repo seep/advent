@@ -1,27 +1,18 @@
 use std::iter::zip;
 
+use aoc::aoc;
 use aoc::array::Array2D;
-use aoc::read_input;
+
+aoc!(part_one, part_two);
 
 const WIDTH: usize = 5;
 
 struct Board {
     values: Array2D<u32>,
-}
-
-struct BoardState {
-    values: Array2D<u32>,
     picked: Array2D<bool>,
 }
 
-impl BoardState {
-    fn new(board: &Board) -> Self {
-        BoardState {
-            values: board.values.clone(),
-            picked: Array2D::new(WIDTH, WIDTH),
-        }
-    }
-
+impl Board {
     fn pick(&mut self, n: u32) -> bool {
         for ((r, c), picked) in self.picked.enumerate_mut() {
             *picked |= *self.values.get(r, c) == n;
@@ -43,12 +34,6 @@ impl BoardState {
     }
 }
 
-fn main() {
-    let (numbers, boards) = parse_input(read_input!());
-    println!("{}", part_one(&numbers, &boards));
-    println!("{}", part_two(&numbers, &boards));
-}
-
 fn parse_input(input: &str) -> (Vec<u32>, Vec<Board>) {
     let mut lines = input.lines();
 
@@ -67,8 +52,9 @@ fn parse_input(input: &str) -> (Vec<u32>, Vec<Board>) {
         }
 
         let values = Array2D::from_slice(&values, WIDTH, WIDTH);
+        let picked = Array2D::fill(false, WIDTH, WIDTH);
 
-        boards.push(Board { values });
+        boards.push(Board { values, picked });
     }
 
     (numbers, boards)
@@ -82,8 +68,8 @@ fn parse_board_line(str: &str) -> Vec<u32> {
     str.split_whitespace().flat_map(str::parse).collect()
 }
 
-fn part_one(numbers: &[u32], boards: &[Board]) -> u32 {
-    let mut boards: Vec<BoardState> = boards.iter().map(BoardState::new).collect();
+fn part_one(input: &str) -> u32 {
+    let (numbers, mut boards) = parse_input(input);
 
     for n in numbers.iter().cloned() {
         for b in boards.iter_mut() {
@@ -96,8 +82,8 @@ fn part_one(numbers: &[u32], boards: &[Board]) -> u32 {
     panic!("no matching board");
 }
 
-fn part_two(numbers: &[u32], boards: &[Board]) -> u32 {
-    let mut boards: Vec<BoardState> = boards.iter().map(BoardState::new).collect();
+fn part_two(input: &str) -> u32 {
+    let (numbers, mut boards) = parse_input(input);
 
     let mut done_state = vec![false; boards.len()];
     let mut done_count = 0;
@@ -125,7 +111,7 @@ fn part_two(numbers: &[u32], boards: &[Board]) -> u32 {
     panic!("no matching board");
 }
 
-fn sum_unpicked_board_values(board: &BoardState) -> u32 {
+fn sum_unpicked_board_values(board: &Board) -> u32 {
     let mut sum = 0;
 
     for (value, picked) in zip(board.values.iter(), board.picked.iter()) {

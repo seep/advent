@@ -1,7 +1,9 @@
 use std::cmp::Ordering;
 
+use aoc::aoc;
 use aoc::array::Array2D;
-use aoc::read_input;
+
+aoc!(part_one, part_two);
 
 const WIDTH: usize = 1000;
 
@@ -11,12 +13,6 @@ struct Line {
     ay: usize,
     bx: usize,
     by: usize,
-}
-
-fn main() {
-    let input = parse_input(read_input!());
-    println!("{}", part_one(&input));
-    println!("{}", part_two(&input));
 }
 
 fn parse_input(input: &str) -> Vec<Line> {
@@ -37,26 +33,22 @@ fn parse_input_line(line: &str) -> Line {
     Line { ax, ay, bx, by }
 }
 
-fn part_one(lines: &[Line]) -> u32 {
-    let mut ortho = vec![];
-
-    for line in lines.iter() {
-        if line.ax == line.bx || line.ay == line.by {
-            ortho.push(*line);
-        }
-    }
-
-    solve(&ortho)
+fn part_one(input: &str) -> u32 {
+    solve(&parse_input(input), true)
 }
 
-fn part_two(lines: &[Line]) -> u32 {
-    solve(lines)
+fn part_two(input: &str) -> u32 {
+    solve(&parse_input(input), false)
 }
 
-fn solve(lines: &[Line]) -> u32 {
+fn solve(lines: &[Line], filter_orthogonal: bool) -> u32 {
     let mut grid = Array2D::fill(0, WIDTH, WIDTH);
 
     for line in lines {
+        if filter_orthogonal && !is_orthogonal(line) {
+            continue;
+        }
+
         let mut x = line.ax;
         let mut y = line.ay;
 
@@ -69,6 +61,11 @@ fn solve(lines: &[Line]) -> u32 {
     }
 
     grid.iter().filter(|&n| *n > 1).count() as u32
+}
+
+/// Returns true if the [line] is orthogonal.
+fn is_orthogonal(line: &Line) -> bool {
+    line.ax == line.bx || line.ay == line.by
 }
 
 /// Increment the value in [grid] located at the specified [row] and [col].

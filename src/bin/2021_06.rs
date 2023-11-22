@@ -1,23 +1,19 @@
-use aoc::read_input;
+use aoc::aoc;
+
+aoc!(part_one, part_two);
 
 const MAX_LIFETIME: usize = 9;
-
-fn main() {
-    let input = parse_input(read_input!());
-    println!("{}", part_one(&input));
-    println!("{}", part_two(&input));
-}
 
 fn parse_input(input: &str) -> Vec<usize> {
     input.split(',').flat_map(str::parse).collect()
 }
 
-fn part_one(lifetimes: &[usize]) -> u64 {
-    solve(lifetimes, 80)
+fn part_one(input: &str) -> u64 {
+    solve(&parse_input(input), 80)
 }
 
-fn part_two(lifetimes: &[usize]) -> u64 {
-    solve(lifetimes, 256)
+fn part_two(input: &str) -> u64 {
+    solve(&parse_input(input), 256)
 }
 
 fn solve(lifetimes: &[usize], days: u32) -> u64 {

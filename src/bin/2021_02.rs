@@ -1,10 +1,6 @@
-use aoc::read_input;
+use aoc::aoc;
 
-fn main() {
-    let input = parse_input(read_input!());
-    println!("{}", part_one(&input));
-    println!("{}", part_two(&input));
-}
+aoc!(part_one, part_two);
 
 enum Command {
     F(i32),
@@ -30,7 +26,9 @@ fn parse_input_line(line: &str) -> Command {
     }
 }
 
-fn part_one(commands: &[Command]) -> i32 {
+fn part_one(input: &str) -> i32 {
+    let commands = parse_input(input);
+
     let mut position = 0;
     let mut depth = 0;
 
@@ -45,7 +43,9 @@ fn part_one(commands: &[Command]) -> i32 {
     position * depth
 }
 
-fn part_two(commands: &[Command]) -> i32 {
+fn part_two(input: &str) -> i32 {
+    let commands = parse_input(input);
+
     let mut position = 0;
     let mut depth = 0;
     let mut aim = 0;
