@@ -72,7 +72,7 @@ fn part_two_search(values: &[u32], use_larger: bool) -> u32 {
         }
     }
 
-    values.first().cloned().unwrap()
+    *values.first().unwrap()
 }
 
 /// Read the binary value at the specified [bit] shift.

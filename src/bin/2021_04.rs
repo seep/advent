@@ -71,7 +71,7 @@ fn parse_board_line(str: &str) -> Vec<u32> {
 fn part_one(input: &str) -> u32 {
     let (numbers, mut boards) = parse_input(input);
 
-    for n in numbers.iter().cloned() {
+    for n in numbers {
         for b in boards.iter_mut() {
             if b.pick(n) {
                 return sum_unpicked_board_values(b) * n;
@@ -88,7 +88,7 @@ fn part_two(input: &str) -> u32 {
     let mut done_state = vec![false; boards.len()];
     let mut done_count = 0;
 
-    for n in numbers.iter().cloned() {
+    for n in numbers {
         for (i, b) in boards.iter_mut().enumerate() {
             if done_state[i] {
                 continue;

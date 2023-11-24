@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use aoc::aoc;
 
 aoc!(part_one, part_two);
@@ -50,7 +48,7 @@ fn part_one(input: &str) -> u32 {
 
     let mut result = 0u32;
 
-    for v in values.iter() {
+    for v in values {
         for &s in v.outputs.iter() {
             match cardinality(s) {
                 2 => result += 1,
@@ -70,12 +68,12 @@ fn part_two(input: &str) -> u32 {
 
     let mut result = 0u32;
 
-    for v in values.iter() {
+    for v in values {
         let digits = solve_digit_mapping(&v.signals);
         result += digits[v.outputs[0] as usize].unwrap() as u32 * 1000;
         result += digits[v.outputs[1] as usize].unwrap() as u32 * 100;
         result += digits[v.outputs[2] as usize].unwrap() as u32 * 10;
-        result += digits[v.outputs[3] as usize].unwrap() as u32 * 1;
+        result += digits[v.outputs[3] as usize].unwrap() as u32;
     }
 
     result
@@ -92,7 +90,7 @@ fn solve_digit_mapping(signals: &[u8]) -> [Option<u8>; 255] {
 
     let mut digits = [0u8; 10];
 
-    for &s in signals.iter() {
+    for &s in signals {
         match cardinality(s) {
             2 => digits[1] = s,
             4 => digits[4] = s,
@@ -109,7 +107,7 @@ fn solve_digit_mapping(signals: &[u8]) -> [Option<u8>; 255] {
     
     let bits_five = digits[4] ^ digits[1]; // bits to distinguishing 5 from 2 
 
-    for s in signals.iter().cloned() {
+    for &s in signals {
         match cardinality(s) {
             6 if s == s | digits[4] => digits[9] = s,
             6 if s == s | digits[1] => digits[0] = s,

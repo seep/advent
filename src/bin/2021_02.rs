@@ -32,7 +32,7 @@ fn part_one(input: &str) -> i32 {
     let mut position = 0;
     let mut depth = 0;
 
-    for c in commands.iter() {
+    for c in commands {
         match c {
             Command::F(n) => position += n,
             Command::D(n) => depth += n,
@@ -50,7 +50,7 @@ fn part_two(input: &str) -> i32 {
     let mut depth = 0;
     let mut aim = 0;
 
-    for c in commands.iter() {
+    for c in commands {
         match c {
             Command::F(n) => {
                 position += n;

@@ -29,5 +29,5 @@ fn solve(positions: &[u32], fuel_cost: fn(u32) -> u32) -> u32 {
         }
     }
 
-    costs.iter().min().cloned().unwrap()
+    *costs.iter().min().unwrap()
 }
