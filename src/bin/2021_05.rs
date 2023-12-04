@@ -70,7 +70,7 @@ fn is_orthogonal(line: &Line) -> bool {
 
 /// Increment the value in [grid] located at the specified [row] and [col].
 fn increment_grid(grid: &mut Array2D<u32>, row: usize, col: usize) {
-    grid.set(row, col, grid.get(row, col) + 1);
+    grid[(row, col)] += 1;
 }
 
 /// Returns the next closest point from ([x], [y]) to ([u], [v]) according to the problem logic.

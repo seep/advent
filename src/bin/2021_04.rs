@@ -14,8 +14,8 @@ struct Board {
 
 impl Board {
     fn pick(&mut self, n: u32) -> bool {
-        for ((r, c), picked) in self.picked.enumerate_mut() {
-            *picked |= *self.values.get(r, c) == n;
+        for (i, picked) in self.picked.enumerate_mut() {
+            *picked |= self.values[i] == n;
         }
 
         for mut row in self.picked.iter_rows() {

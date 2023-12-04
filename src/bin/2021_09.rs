@@ -52,24 +52,21 @@ fn part_two(input: &str) -> u32 {
 }
 
 fn is_minimum(heights: &HeightMap, x: usize, y: usize) -> bool {
-    let (min_x, max_x) = (0, heights.cols() - 1);
-    let (min_y, max_y) = (0, heights.rows() - 1);
+    let v = heights.get(y, x);
 
-    let v = *heights.get(y, x);
-
-    if x > min_x && v >= *heights.get(y, x - 1) {
+    if x > 0 && v >= heights.get(y, x - 1) {
         return false;
     }
 
-    if y > min_y && v >= *heights.get(y - 1, x) {
+    if y > 0 && v >= heights.get(y - 1, x) {
         return false;
     }
 
-    if x < max_x && v >= *heights.get(y, x + 1) {
+    if x < heights.cols() - 1 && v >= heights.get(y, x + 1) {
         return false;
     }
 
-    if y < max_y && v >= *heights.get(y + 1, x) {
+    if y < heights.rows() - 1 && v >= heights.get(y + 1, x) {
         return false;
     }
 
@@ -88,11 +85,11 @@ fn find_basin_size(heights: &HeightMap, x: usize, y: usize) -> u32 {
     queue.push_back((x, y));
 
     while let Some((x, y)) = queue.pop_front() {
-        if *seen.get(y, x) {
+        if seen[(y, x)] {
             continue;
         }
 
-        if *heights.get(y, x) >= 9 {
+        if heights[(y, x)] >= 9 {
             continue;
         }
 

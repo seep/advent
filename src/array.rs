@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use std::ops::{Index, IndexMut};
 
 #[derive(Clone)]
 pub struct Array2D<T> {
@@ -7,11 +8,14 @@ pub struct Array2D<T> {
     cols: usize,
 }
 
-impl<T: Clone> Array2D<T> {
+pub type Array2DIndex = (usize, usize);
+
+impl<T> Array2D<T> {
     /// Creates a new Array2D filled with the default value.
     pub fn new(rows: usize, cols: usize) -> Self
     where
         T: Default,
+        T: Clone,
     {
         Array2D {
             values: vec![T::default(); rows * cols],
@@ -55,14 +59,31 @@ impl<T: Clone> Array2D<T> {
         self.cols
     }
 
-    /// Get the value at the specified [row] and [col].
-    pub fn get(&self, row: usize, col: usize) -> &T {
-        &self.values[self.cols * row + col]
+    /// Returns the flat index within the values vector of the specified [row] and [col], or None if out of bounds.
+    pub fn get_index(&self, row: usize, col: usize) -> Option<usize> {
+        if row < self.rows && col < self.cols {
+            Some(self.cols * row + col)
+        } else {
+            None
+        }
+    }
+
+    /// Returns a reference to the element at the specified [row] and [col], or None if out of bounds.
+    pub fn get(&self, row: usize, col: usize) -> Option<&T> {
+        let index = self.get_index(row, col)?;
+        self.values.get(index)
+    }
+
+    /// Returns a mutable reference to the element at the specified [row] and [col], or None if out of bounds.
+    pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
+        let index = self.get_index(row, col)?;
+        self.values.get_mut(index)
     }
 
     /// Set the [value] at the specified [row] and [col].
     pub fn set(&mut self, row: usize, col: usize, value: T) {
-        self.values[self.cols * row + col] = value;
+        let index = self.get_index(row, col).expect("index out of bounds");
+        self.values[index] = value;
     }
 
     /// Returns an iterator (in row major order) over the array.
@@ -105,12 +126,26 @@ impl<T: Clone> Array2D<T> {
     }
 
     /// Returns an iterator that enumerates each value in the array with its 2D index.
-    pub fn enumerate(&self) -> impl Iterator<Item = ((usize, usize), &T)> {
+    pub fn enumerate(&self) -> impl Iterator<Item = (Array2DIndex, &T)> {
         self.iter_indices().zip(self.iter())
     }
 
     /// Returns an iterator that enumerates each value in the array with its 2D index, that allows modifying each value.
-    pub fn enumerate_mut(&mut self) -> impl Iterator<Item = ((usize, usize), &mut T)> {
+    pub fn enumerate_mut(&mut self) -> impl Iterator<Item = (Array2DIndex, &mut T)> {
         self.iter_indices().zip(self.iter_mut())
+    }
+}
+
+impl<T> Index<Array2DIndex> for Array2D<T> {
+    type Output = T;
+
+    fn index(&self, (row, col): Array2DIndex) -> &Self::Output {
+        self.get(row, col).expect("index out of bounds")
+    }
+}
+
+impl<T> IndexMut<Array2DIndex> for Array2D<T> {
+    fn index_mut(&mut self, (row, col): Array2DIndex) -> &mut Self::Output {
+        self.get_mut(row, col).expect("index out of bounds")
     }
 }
