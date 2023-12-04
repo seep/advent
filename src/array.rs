@@ -80,6 +80,16 @@ impl<T> Array2D<T> {
         self.values.get_mut(index)
     }
 
+    /// Returns a reference to the element at the specified [row] and [col], or None if out of bounds.
+    pub fn get_tuple(&self, (row, col): Array2DIndex) -> Option<&T> {
+        self.get(row, col)
+    }
+
+    /// Returns a mutable reference to the element at the specified [row] and [col], or None if out of bounds.
+    pub fn get_mut_tuple(&mut self, (row, col): Array2DIndex) -> Option<&mut T> {
+        self.get_mut(row, col)
+    }
+
     /// Set the [value] at the specified [row] and [col].
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         let index = self.get_index(row, col).expect("index out of bounds");
@@ -125,6 +135,11 @@ impl<T> Array2D<T> {
         (0..self.cols).map(|c| self.iter_col(c))
     }
 
+    /// Returns an iterator over each element adjacent to the specified [row] and [col].
+    pub fn iter_adjacent(&self, row: usize, col: usize) -> impl Iterator<Item = &T> {
+        MooreNeighborhoodIterator::new((row, col), false).flat_map(|i| self.get_tuple(i))
+    }
+
     /// Returns an iterator that enumerates each value in the array with its 2D index.
     pub fn enumerate(&self) -> impl Iterator<Item = (Array2DIndex, &T)> {
         self.iter_indices().zip(self.iter())
@@ -148,4 +163,71 @@ impl<T> IndexMut<Array2DIndex> for Array2D<T> {
     fn index_mut(&mut self, (row, col): Array2DIndex) -> &mut Self::Output {
         self.get_mut(row, col).expect("index out of bounds")
     }
+}
+
+/// Data structure for iterating over the Moore neighborhood of a 2D index.
+struct MooreNeighborhoodIterator {
+    cells: [Option<Array2DIndex>; 9],
+    index: usize,
+}
+
+impl MooreNeighborhoodIterator {
+    pub fn new(center: Array2DIndex, include_center: bool) -> MooreNeighborhoodIterator {
+        let mut cells = [None; 9];
+
+        cells[0] = moore_neighbor(center, 0);
+        cells[1] = moore_neighbor(center, 1);
+        cells[2] = moore_neighbor(center, 2);
+        cells[3] = moore_neighbor(center, 3);
+        cells[4] = moore_neighbor(center, 4);
+        cells[5] = moore_neighbor(center, 5);
+        cells[6] = moore_neighbor(center, 6);
+        cells[7] = moore_neighbor(center, 7);
+        cells[8] = moore_neighbor(center, 8);
+
+        if !include_center {
+            cells[4] = None;
+        }
+
+        Self { cells, index: 0 }
+    }
+}
+
+impl Iterator for MooreNeighborhoodIterator {
+    type Item = Array2DIndex;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut next = self.index;
+
+        while next < self.cells.len() && self.cells[next].is_none() {
+            next += 1;
+        }
+
+        self.index = next + 1;
+
+        if next < self.cells.len() {
+            return self.cells[next];
+        }
+
+        None
+    }
+}
+
+/// Returns the Moore neighbor relative to the specified index, or None if the the coordinate would overflow.
+#[allow(clippy::manual_range_patterns)]
+fn moore_neighbor((row, col): Array2DIndex, moore: usize) -> Option<Array2DIndex> {
+    Option::zip(
+        match moore {
+            0 | 1 | 2 => row.checked_sub(1),
+            3 | 4 | 5 => Some(row),
+            6 | 7 | 8 => row.checked_add(1),
+            _ => panic!(),
+        },
+        match moore {
+            0 | 3 | 6 => col.checked_sub(1),
+            1 | 4 | 7 => Some(col),
+            2 | 5 | 8 => col.checked_add(1),
+            _ => panic!(),
+        },
+    )
 }
