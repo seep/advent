@@ -1,4 +1,7 @@
 pub mod array;
+pub mod parse;
+
+pub use parse::*;
 
 #[macro_export]
 macro_rules! aoc {
@@ -14,5 +17,9 @@ macro_rules! aoc {
 }
 
 pub fn select<T>(condition: bool, a: T, b: T) -> T {
-    if condition { a } else { b }
+    if condition {
+        a
+    } else {
+        b
+    }
 }
