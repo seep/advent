@@ -1,5 +1,7 @@
 use aoc::*;
+use std::cmp::Ordering;
 use std::collections::HashSet;
+use std::iter::Map;
 
 use itertools::Itertools;
 
@@ -188,19 +190,28 @@ fn parse_input_range(s: &str) -> Mapping {
 
 /// Fill gaps in the range mappings with the identity mapping to reduce special cases.
 fn fill_mapping_gaps(mappings: &mut Vec<Mapping>) {
-    mappings.sort_by(|a, b| u64::cmp(&a.src.lower, &b.src.lower));
+    mappings.sort_by(sort_mapping_by_src);
 
     let mut n = 0;
     let mut i = 0;
 
     while i < mappings.len() {
-        if mappings[i].src.lower != n {
-            mappings.insert(i, Mapping::identity(n, mappings[i].src.lower))
+        let prev_upper = n;
+        let curr_lower = mappings[i].src.lower;
+        let curr_upper = mappings[i].src.upper;
+
+        if prev_upper < curr_lower {
+            mappings.insert(i, Mapping::identity(prev_upper, curr_lower));
+            i += 1;
         }
 
-        n = mappings[i].src.upper;
+        n = curr_upper;
         i += 1;
     }
 
     mappings.push(Mapping::identity(n, u64::MAX));
+}
+
+fn sort_mapping_by_src(a: &Mapping, b: &Mapping) -> Ordering {
+    u64::cmp(&a.src.lower, &b.src.lower)
 }

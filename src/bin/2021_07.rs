@@ -9,13 +9,19 @@ fn parse_input(input: &str) -> Vec<u32> {
 }
 
 fn part_one(input: &str) -> u32 {
-    solve(&parse_input(input), |distance| distance)
+    solve(&parse_input(input), simple_cost)
 }
 
 fn part_two(input: &str) -> u32 {
-    solve(&parse_input(input), |distance| {
-        (distance + distance * distance) / 2
-    })
+    solve(&parse_input(input), complex_cost)
+}
+
+fn simple_cost(dist: u32) -> u32 {
+    dist
+}
+
+fn complex_cost(dist: u32) -> u32 {
+    (dist + dist * dist) / 2
 }
 
 fn solve(positions: &[u32], fuel_cost: fn(u32) -> u32) -> u32 {

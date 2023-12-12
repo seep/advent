@@ -3,18 +3,18 @@ use aoc::aoc;
 aoc!(part_one, part_two);
 
 fn part_one(input: &str) -> u32 {
-    input.lines().map(solve_part_one_line).sum()
+    input.lines().map(solve_without_alpha).sum()
 }
 
 fn part_two(input: &str) -> u32 {
-    input.lines().map(solve_part_two_line).sum()
+    input.lines().map(solve_with_alpha).sum()
 }
 
-fn solve_part_one_line(line: &str) -> u32 {
+fn solve_without_alpha(line: &str) -> u32 {
     solve(line, false)
 }
 
-fn solve_part_two_line(line: &str) -> u32 {
+fn solve_with_alpha(line: &str) -> u32 {
     solve(line, true)
 }
 
